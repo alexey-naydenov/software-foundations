@@ -958,7 +958,12 @@ Proof.
 Theorem remove_does_not_increase_count: forall (s : bag),
   (count 0 (remove_one 0 s)) <=? (count 0 s) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros s. induction s as [|h s' IHs'].
+  - simpl. reflexivity.
+  - destruct h as [| h'].
+    + simpl. rewrite -> leb_n_Sn. reflexivity.
+    + simpl. rewrite IHs'. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, standard, optional (bag_count_sum)
@@ -970,8 +975,20 @@ Proof.
     [=?] you may find it useful to know that [destruct] works on
     arbitrary expressions, not just simple identifiers.)
 *)
-(* FILL IN HERE
 
+Theorem bag_count_sum : forall (s1 s2 : bag) (n : nat),
+    (count n (sum s1 s2)) =? ((count n s1) + (count n s2)) = true.
+Proof.
+  intros s1 s2 n. induction s1 as [|h1 s1' IHs1'].
+  - simpl. rewrite -> eqb_for_self. reflexivity.
+  - assert (H: sum (h1::s1') s2 = h1 :: (s1' ++ s2)). {
+      simpl. reflexivity. }
+    rewrite -> H. destruct (n =? h1) eqn:Eq.
+    + simpl. rewrite -> Eq. simpl. rewrite <- IHs1'. reflexivity.
+    + simpl. rewrite -> Eq. rewrite <- IHs1'. reflexivity.
+Qed.
+
+(* FILL IN HERE
     [] *)
 
 (** **** Exercise: 4 stars, advanced (rev_injective)
@@ -979,10 +996,30 @@ Proof.
     Prove that the [rev] function is injective. There is a hard way
     and an easy way to do this. *)
 
+Theorem rev_reverse : forall (l1 l2 : natlist),
+    l1 = rev l2 -> rev l1 = l2.
+Proof.
+  intros l1 l2.
+
 Theorem rev_injective : forall (l1 l2 : natlist),
   rev l1 = rev l2 -> l1 = l2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2. intros H.
+  destruct l1.
+  - destruct l2.
+    + reflexivity.
+    + 
+
+
+
+
+(*
+Fixpoint rev (l:natlist) : natlist :=
+  match l with
+  | nil    => nil
+  | h :: t => rev t ++ [h]
+  end.
+*)
 (** [] *)
 
 (* ################################################################# *)
